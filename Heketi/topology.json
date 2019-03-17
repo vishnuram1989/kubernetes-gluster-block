@@ -1,0 +1,67 @@
+{
+    "clusters": [
+        {
+            "nodes": [
+                {
+                    "node": {
+                        "hostnames": {
+                            "manage": [
+                                "<host-01>"
+                            ],
+                            "storage": [
+                                "<host-ip-01>"
+                            ]
+                        },
+                        "zone": 1
+                    },
+                    "devices": [
+                        {
+                            "name": "/dev/sda",
+                            "destroydata": false
+                        }
+                    ]
+                },
+                {
+                    "node": {
+                        "hostnames": {
+                            "manage": [
+                                "<host-02>"
+                            ],
+                            "storage": [
+                                "<host-ip-02>"
+                            ]
+                        },
+                        "zone": 1
+                    },
+                    "devices": [
+                        {
+                            "name": "/dev/sda",
+                            "destroydata": false
+                        }
+                    ]
+                },
+                {
+                    "node": {
+                        "hostnames": {
+                            "manage": [
+                                "<host-03>"
+                            ],
+                            "storage": [
+                                "<host-ip-03>"
+                            ]
+                        },
+                        "zone": 1
+                    },
+                    "devices": [
+                        {
+                            "name": "/dev/sda",
+                            "destroydata": false
+                        }
+                    ]
+                }
+                    ]
+                }
+            ]
+        }
+    ]
+}
