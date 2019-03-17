@@ -70,3 +70,12 @@ Note :
   update topology files based on the gluster-nodes and devices attached to your system
 
 ```
+
+## Heketi-API service enabling
+
+``` bash
+$ systemctl enable heketi && systemctl start heketi
+$ heketi-cli topology load --json=/etc/heketi/template.json
+
+Note : IF Everything goes fine heketi will format the  disk and add them gluster in brick format
+```
