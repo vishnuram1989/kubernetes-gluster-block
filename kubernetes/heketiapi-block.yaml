@@ -6,7 +6,7 @@ provisioner: gluster.org/glusterblock
 allowVolumeExpansion: true
 reclaimPolicy: Retain
 parameters:
-  resturl: "http://10.139.224.106:8080"
+  resturl: "http://<ip-address>:<port>"
   restuser: "admin"
   restsecretNamespace: "default"
   restsecretname: "heketi-secret"
