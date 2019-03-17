@@ -79,3 +79,14 @@ $ heketi-cli topology load --json=/etc/heketi/template.json
 
 Note : IF Everything goes fine heketi will format the  disk and add them to gluster in brick format
 ```
+
+## Heketi Kubernetes Integration
+
+Step 1 : update heketiapi url and other parametes in heketi-block.yaml
+ex: resturl: "http://10.139.224.106:8080"
+ex: volumenameprefix: "myblock"
+ex: hacount: "1" # How many replicas you need
+ex: chapauthenabled: "false"# If ChapAuthentication Needed
+ex: opmode: "heketi"
+
+Step 2 : Kubetcl apply -f kubernetes/

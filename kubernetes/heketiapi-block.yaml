@@ -14,4 +14,4 @@ parameters:
   hacount: "1"
   #clusterids: "bd663e2d67877b5a5513ef7dbdfecd2b"
   chapauthenabled: "false"
-  volumenameprefix: "datalake"
+  volumenameprefix: "myblock"
