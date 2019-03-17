@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: glusterblock-provisioner
+spec:
+  serviceAccountName: glusterblock-provisioner
+  containers:
+    - image: "quay.io/external_storage/glusterblock-provisioner:latest"
+      name: glusterblock-provisioner
+      env:
+        - name: PROVISIONER_NAME
+          value: "gluster.org/glusterblock"
+ 
+
