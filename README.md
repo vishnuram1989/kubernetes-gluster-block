@@ -31,7 +31,7 @@ systemctl start gluster-blockd
 
 ## Heketi-API Node setup
 
-``` 
+``` bash
 Step 1 : Update Gluster Node details in Heketi API Server
 
 cat << EOF >> /etc/hosts
@@ -77,5 +77,5 @@ Note :
 $ systemctl enable heketi && systemctl start heketi
 $ heketi-cli topology load --json=/etc/heketi/template.json
 
-Note : IF Everything goes fine heketi will format the  disk and add them gluster in brick format
+Note : IF Everything goes fine heketi will format the  disk and add them to gluster in brick format
 ```
