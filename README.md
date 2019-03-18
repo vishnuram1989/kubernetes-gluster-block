@@ -3,33 +3,48 @@
 ## This is a implementation for kubernetes Block Storage using gluster-block
 
 # Pre-Requesties 
-## This setup is based on a 3 node gluster server
+```
+1.  3 node gluster server
+2.  Heketi-API Server
+3.  Kubernetes Setup
+```
+
+Install
+-------
+
+GlusterFS and GlusterBlock has to be installed on gluster nodes
+
+Add host information on /etc/hosts for all glusternodes
 
 ```
-Step 1 : update host files with glusterfs Node details
-
 cat << EOF >> /etc/hosts
 <host-ip-1> <hostname-01>
 <host-ip-2> <hostname-02>
 <host-ip-2> <hostname-03>
 EOF
+```
 
-Step 2 : GlusterFS Package Requirements
+Install Dependencies
 
+```bash
 yum install centos-release-gluster  -y
 
 yum install glusterfs glusterfs-cli glusterfs-libs glusterfs-server -y
-systemctl enable glusterd
-systemctl start glusterd
 
 yum install libtcmu tcmu-runner tcmu-runner-handler-glfs gluster-block -y
 
+```
+Enable and Start Gluster Services
+
+```bash
+systemctl enable glusterd
+systemctl start glusterd
 systemctl enable gluster-blockd
 systemctl start gluster-blockd
 
 ```
 
-## Heketi-API Node setup
+#### Heketi-API Node setup
 
 ``` bash
 Step 1 : Update Gluster Node details in Heketi API Server
