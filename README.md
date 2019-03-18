@@ -145,14 +145,97 @@ Note: This will format the disk and prepare for gluster use. This removes manual
 IF Everything goes fine heketi will format the  disk and add them to gluster in brick format
 ```
 
+
+## Kubernetes client packages installation
+```bash
+yum install iscsi-initiator-utils
+service iscsid start
+service iscsid status
+```
+
+
 ## Heketi Kubernetes Integration
 
-Step 1 : update heketiapi url and other parametes in heketi-block.yaml
+Heketi secret creation if JWT Enabled
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: heketi-secret
+  namespace: default
+# echo -n "password" | base64
+data:
+  key: <password-value>
+type: gluster.org/glusterblock
 ```
-ex: resturl: "http://10.139.224.106:8080"
-ex: volumenameprefix: "myblock"
-ex: hacount: "1" # How many replicas you need
-ex: chapauthenabled: "false"# If ChapAuthentication Needed
-ex: opmode: "heketi"
+
+kubectl apply -f kubernetes/heketi-secret.yaml
+
+Heketi Storage Class creation on kubernetes
+
 ```
-Step 2 : Kubetcl apply -f kubernetes/
+parameters:
+  resturl: "http://<ip-address>:<port>"
+  restuser: "<user-name>"
+  restsecretNamespace: "default"
+  restsecretname: "heketi-secret"
+  opmode: "heketi"
+  hacount: "1"
+  chapauthenabled: "false"
+  volumenameprefix: "myblock"
+
+Note: modify parameters as per the need
+```
+kubectl apply -f kubernetes/heketiapi-block.yaml
+
+### External storage provisioner configuration for GlusterBlock
+Create a service account to use with storage provisioner
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: glusterblock-provisioner`
+```
+
+kubectl apply -f kubernetes/blockstorage-sa.yaml
+
+Create RBAC with priveledges required for provisioner 
+
+kubecl apply -f kubernetes/rbac.yaml
+
+External Provisioner Configuration
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: glusterblock-provisioner
+spec:
+  serviceAccountName: glusterblock-provisioner
+  containers:
+    - image: "quay.io/external_storage/glusterblock-provisioner:latest"
+      name: glusterblock-provisioner
+      env:
+        - name: PROVISIONER_NAME
+          value: "gluster.org/glusterblock"
+```
+kubectl apply -f kubernetes/provisioner.yaml
+
+##Block Storage demo
+```yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: demo-pvc
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "gluster-block"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gb
+```
+kubectl apply -f kubernetes/demo-pvc.yaml
+
