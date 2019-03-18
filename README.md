@@ -46,53 +46,103 @@ systemctl start gluster-blockd
 
 #### Heketi-API Node setup
 
-``` bash
-Step 1 : Update Gluster Node details in Heketi API Server
 
+ Update Gluster Node details in Heketi API Server
+``` bash
 cat << EOF >> /etc/hosts
 <host-ip-1> <hostname-01>
 <host-ip-2> <hostname-02>
 <host-ip-2> <hostname-03>
 EOF
+```
 
-Step 2 :  yum install heketi -y
+Install heketi dependencies
 
-Step 3 :  Genetate SSH-Keyen to athenticate gluster nodes via heketi
+```bash
+yum install heketi -y
+```
 
+Generate SSH-Keyen to athenticate gluster nodes via heketi
+
+```bash
 ssh-keygen -f /etc/heketi/heketi_key -t rsa -N ''
 ssh-copy-id -i /etc/heketi/heketi_key.pub root@gluter-node1
 ssh-copy-id -i /etc/heketi/heketi_key.pub root@gluter-node1
 ssh-copy-id -i /etc/heketi/heketi_key.pub root@gluter-node1
 
 Note : Less priviledged user can be used that should have priviledge to run gluster and lvm commands 
+```
 
-Step 4: wget https://github.com/heketi/heketi/releases/download/v8.0.0/heketi-v8.0.0.linux.amd64.tar.gz && tar xvzf heketi-client-v8.0.0.linux.amd64.tar.gz --strip=2 heketi-client/bin/heketi-cli 
+Install Heketi-cli to access Heketi API server
 
-Step 5 : mv heketi-cli /usr/bin/ && chmod +x /usr/bin/heketi-cli
+```bash
+ wget https://github.com/heketi/heketi/releases/download/v8.0.0/heketi-v8.0.0.linux.amd64.tar.gz && tar xvzf heketi-client-v8.0.0.linux.amd64.tar.gz 
+  cp heketi/heketi-client/bin/heketi-cli  /usr/bin && chmod +x /usr/bin/heketi
+```
 
-Step 6 : COPY Heketi {topology.json and heketi.json} to /etc/heketi
-cp Heketi{heketi.json,topology.json} /etc/heketi/
+There are several parameters in Heketi {topology.json and heketi.json} before starting the heketi service
 
-Note : 
-  For JWT Activation  change "use_auth": true in heketi.json
-  change ssh details as per your  environment in heketi.json
-  "sshexec": {
+
+Heketi JWT option for security in heketi.json
+
+```json
+  "use_auth": false,
+```
+
+For Executor type SSH|Mock
+```json
+"executor": "ssh",
+"sshexec": {
       "keyfile": "<private-key-location>",
       "user": "<user-name>",
       "port": "22",
       "fstab": "/etc/fstab"
   }
-  update topology files based on the gluster-nodes and devices attached to your system
 
+for Block Storage activation 
+```json
+
+   "auto_create_block_hosting_volume": true,  
+   "block_hosting_volume_size": <size-in-GB>
 ```
 
-## Heketi-API service enabling
+Start Heketi-API service
 
 ``` bash
-$ systemctl enable heketi && systemctl start heketi
-$ heketi-cli topology load --json=/etc/heketi/template.json
+ systemctl enable heketi && systemctl start heketi
+```
 
-Note : IF Everything goes fine heketi will format the  disk and add them to gluster in brick format
+Topology.json defines our gluster configuration. Modify as per the gluster config. Refer heketi/topology.json for entire configuration
+
+```json
+
+ {
+                    "node": {
+                        "hostnames": {
+                            "manage": [
+                                "<host-01>"
+                            ],
+                            "storage": [
+                                "<host-ip-01>"
+                            ]
+                        },
+                        "zone": 1
+                    },
+                    "devices": [
+                        {
+                            "name": "/dev/sda"
+                        }
+                    ]
+                }
+```
+
+Load topology.json to heketi 
+
+```bash
+heketi-cli topology load --json=/etc/heketi/template.json
+
+Note: This will format the disk and prepare for gluster use. This removes manual maintanence of strage from the backend
+IF Everything goes fine heketi will format the  disk and add them to gluster in brick format
 ```
 
 ## Heketi Kubernetes Integration
